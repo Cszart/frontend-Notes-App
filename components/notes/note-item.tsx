@@ -53,77 +53,81 @@ export const Note_Item: React.FC<NoteProps> = ({ noteData, refetchData }) => {
     <>
       <div
         className={clsx(
-          "flex flex-wrap justify-between items-center",
+          "flex flex-col justify-center",
           "border border-slate-500 rounded-xl",
           "w-full max-w-[30%] p-6"
         )}
       >
         {/* Note info */}
-        <div className="flex flex-col w-auto">
+        <div className="flex justify-between w-full">
+          {/* Title */}
           <h3 className="text-xl text-gray-900 font-bold">
             {preNoteData?.title}
           </h3>
-          <p>
-            Created at:{" "}
-            {moment(preNoteData?.createdAt).format("h:mma - MMMM d, YYYY")}
-          </p>
 
-          <div className="flex flex-wrap gap-4 w-auto">
-            {preNoteData?.categories
-              .slice(0, 3)
-              .map((categoryItem: CategoryI, index: number) => {
-                return (
-                  <Tag
-                    key={`category-note${preNoteData?.id}-${index}`}
-                    icon={<TagOutlined />}
-                    color="#87CEEB"
-                  >
-                    {categoryItem.name}
-                  </Tag>
-                );
-              })}
-          </div>
+          {/* Icons */}
+          {preNoteData && preNoteData.id && (
+            <div className="flex flex-wrap self-start gap-4 w-auto">
+              {/* Archive */}
+              {preNoteData && !preNoteData.archived && !isArchiving && (
+                <InboxOutlined
+                  onClick={handler_archieve}
+                  style={{ fontSize: "18px" }}
+                />
+              )}
+              {preNoteData && preNoteData.archived && !isArchiving && (
+                <UploadOutlined
+                  onClick={handler_archieve}
+                  style={{ fontSize: "18px" }}
+                />
+              )}
+              {isArchiving && (
+                <LoadingOutlined style={{ fontSize: "18px" }} spin />
+              )}
+
+              {/* Edit */}
+              <EditFilled
+                onClick={() => setShowDetail(true)}
+                style={{ fontSize: "18px" }}
+              />
+
+              {/* Delete */}
+              {!isDeleting && (
+                <DeleteFilled
+                  onClick={handler_delete}
+                  style={{ fontSize: "18px" }}
+                />
+              )}
+
+              {isDeleting && (
+                <LoadingOutlined style={{ fontSize: "18px" }} spin />
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Icons */}
-        {preNoteData && preNoteData.id && (
-          <div className="flex flex-wrap self-start gap-4 w-auto">
-            {/* Archive */}
-            {preNoteData && !preNoteData.archived && !isArchiving && (
-              <InboxOutlined
-                onClick={handler_archieve}
-                style={{ fontSize: "18px" }}
-              />
-            )}
-            {preNoteData && preNoteData.archived && !isArchiving && (
-              <UploadOutlined
-                onClick={handler_archieve}
-                style={{ fontSize: "18px" }}
-              />
-            )}
-            {isArchiving && (
-              <LoadingOutlined style={{ fontSize: "18px" }} spin />
-            )}
+        <p className="text-base text-gray-900">
+          Created at:{" "}
+          <span className="font-medium">
+            {moment(preNoteData?.createdAt).format("h:mma - MMMM d, YYYY")}
+          </span>
+        </p>
 
-            {/* Edit */}
-            <EditFilled
-              onClick={() => setShowDetail(true)}
-              style={{ fontSize: "18px" }}
-            />
-
-            {/* Delete */}
-            {!isDeleting && (
-              <DeleteFilled
-                onClick={handler_delete}
-                style={{ fontSize: "18px" }}
-              />
-            )}
-
-            {isDeleting && (
-              <LoadingOutlined style={{ fontSize: "18px" }} spin />
-            )}
-          </div>
-        )}
+        <div className="flex flex-wrap gap-4 w-auto">
+          {preNoteData?.categories
+            .slice(0, 4)
+            .map((categoryItem: CategoryI, index: number) => {
+              return (
+                <Tag
+                  key={`category-note${preNoteData?.id}-${index}`}
+                  icon={<TagOutlined />}
+                  color="#87CEEB"
+                >
+                  {categoryItem.name}
+                </Tag>
+              );
+            })}
+        </div>
       </div>
 
       {showDetail && (

@@ -95,17 +95,17 @@ const Home: NextPage = () => {
   }, [current_option, notes_active_data, notes_all_data, notes_archived_data]);
 
   // Check notes data
-  React.useEffect(() => {
-    console.log("<- Notes page, all notes data ->", notes_all_data);
-  }, [notes_all_data]);
+  // React.useEffect(() => {
+  //   console.log("<- Notes page, all notes data ->", notes_all_data);
+  // }, [notes_all_data]);
 
-  React.useEffect(() => {
-    console.log("<- Notes page, archived notes data ->", notes_archived_data);
-  }, [notes_archived_data]);
+  // React.useEffect(() => {
+  //   console.log("<- Notes page, archived notes data ->", notes_archived_data);
+  // }, [notes_archived_data]);
 
-  React.useEffect(() => {
-    console.log("<- Notes page, active notes data ->", notes_active_data);
-  }, [notes_active_data]);
+  // React.useEffect(() => {
+  //   console.log("<- Notes page, active notes data ->", notes_active_data);
+  // }, [notes_active_data]);
 
   return (
     <>
