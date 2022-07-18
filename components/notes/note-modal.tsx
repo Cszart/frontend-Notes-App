@@ -4,7 +4,11 @@ import { CategoryI, NoteDetailsProps } from "../../interfaces";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Button, Form, Input, Select } from "antd";
-// import { post_notes_create, put_notes_update } from "../../api";
+import {
+  post_categories_create,
+  post_notes_create,
+  put_notes_update,
+} from "../../api";
 import {
   DeleteFilled,
   InboxOutlined,
@@ -30,9 +34,11 @@ export const Note_Modal: React.FC<NoteDetailsProps> = ({
   isDeleting,
   handler_delete,
 
-  // refetchData,
+  refetchData,
+  refetchCategories,
 }) => {
   const [isLoading, setIsLoading] = React.useState<boolean>();
+  // const [maxID, setMaxID] = React.useState<number>(0);
 
   // All options available
   const [categoriesOptions, setCategoriesOptions] = React.useState<
@@ -40,8 +46,13 @@ export const Note_Modal: React.FC<NoteDetailsProps> = ({
   >([]);
 
   // All options selected (formated)
-  // const [categoriesOptionsSelected, setCategoriesOptionsSelected] =
-  //   React.useState<number[]>([]);
+  const [categoriesOptionsSelected, setCategoriesOptionsSelected] =
+    React.useState<number[]>([]);
+
+  // Categories sorted to get the max value
+  // const [categoriesSorted, setCategoriesSorted] = React.useState<CategoryI[]>(
+  //   []
+  // );
 
   const [form] = Form.useForm();
 
@@ -53,22 +64,22 @@ export const Note_Modal: React.FC<NoteDetailsProps> = ({
     const submitData: any = {
       title: values.title,
       text: values.text,
-      // categories: categoriesOptionsSelected,
+      categories: categoriesOptionsSelected,
     };
 
-    // if (typeAction == "update" && noteData && noteData.id) {
-    //   //   const update_response =
-    //   await put_notes_update(noteData.id, submitData);
+    if (typeAction == "update" && noteData && noteData.id) {
+      //   const update_response =
+      await put_notes_update(noteData.id, submitData);
 
-    //   //   console.log("<- Update note submit data ->", submitData);
-    //   //   console.log("<- Update response ->", update_response);
-    // }
+      //   console.log("<- Update note submit data ->", submitData);
+      //   console.log("<- Update response ->", update_response);
+    }
 
-    // if (typeAction == "create") {
-    //   await post_notes_create(submitData);
-    // }
+    if (typeAction == "create") {
+      await post_notes_create(submitData);
+    }
 
-    // await refetchData();
+    await refetchData();
 
     console.log("<- submit data ->", submitData);
 
@@ -77,14 +88,45 @@ export const Note_Modal: React.FC<NoteDetailsProps> = ({
   };
 
   // Select category option
-  const handleChangeSelect = (values: any) => {
+  const handleChangeSelect = async (values: any[]) => {
     console.log("<- Values categories, ", values);
+    const selectedCategories: number[] = [];
+
+    if (categoriesAllData) {
+      values.forEach(async (item: any) => {
+        // Filter all categories
+        const checkCategory = categoriesAllData.filter(
+          (categoryItem: CategoryI) => categoryItem.name === item
+        );
+
+        // If not null then the category already exist
+        if (checkCategory.length > 0 && checkCategory[0].id) {
+          selectedCategories.push(checkCategory[0].id);
+          setCategoriesOptionsSelected(selectedCategories);
+
+          // Category doesnt exist
+        } else {
+          // Create category
+          const createCategoryresponse = await post_categories_create({
+            id: 0,
+            name: item,
+          });
+
+          // Refetch categories
+          await refetchCategories();
+
+          selectedCategories.push(createCategoryresponse.data.id);
+          setCategoriesOptionsSelected(selectedCategories);
+        }
+      });
+    }
   };
 
   // Use Effect
   // Format categories to show
   React.useEffect(() => {
     if (categoriesAllData) {
+      // Format categories
       const categoriesOptions: React.ReactNode[] = [];
 
       categoriesAllData.forEach((categoryItem: CategoryI) => {
@@ -98,6 +140,11 @@ export const Note_Modal: React.FC<NoteDetailsProps> = ({
       });
 
       setCategoriesOptions(categoriesOptions);
+
+      // Sort categories
+      categoriesAllData.sort((a, b) => b.id - a.id);
+      // setCategoriesSorted(sortcategories);
+      // setMaxID(categoriesAllData[0].id);
     }
   }, [categoriesAllData]);
 

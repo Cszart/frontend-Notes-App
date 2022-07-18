@@ -2,7 +2,7 @@ import { NoteI } from "./notes";
 
 // Basic structure
 export interface CategoryI {
-  id?: number;
+  id: number;
   name: string;
 
   notes?: NoteI[];

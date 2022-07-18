@@ -235,6 +235,7 @@ const Home: NextPage = () => {
                   noteData={notesItem}
                   categoriesAllData={categories_all_data}
                   refetchData={refetchData}
+                  refetchCategories={() => categories_all_refetch()}
                 />
               );
             })}
@@ -250,6 +251,7 @@ const Home: NextPage = () => {
           titleModal="Create Note"
           categoriesAllData={categories_all_data}
           refetchData={refetchData}
+          refetchCategories={() => categories_all_refetch()}
         />
       )}
     </>

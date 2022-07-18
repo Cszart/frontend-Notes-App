@@ -18,6 +18,7 @@ export const Note_Item: React.FC<NoteProps> = ({
   noteData,
   categoriesAllData,
   refetchData,
+  refetchCategories,
 }) => {
   const [preNoteData, setPreNoteData] = React.useState<NoteI>();
 
@@ -164,6 +165,7 @@ export const Note_Item: React.FC<NoteProps> = ({
           isDeleting={isDeleting}
           handler_delete={handler_delete}
           refetchData={refetchData}
+          refetchCategories={() => refetchCategories()}
         />
       )}
     </>

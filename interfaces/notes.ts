@@ -17,14 +17,16 @@ export interface NoteDetailsProps {
   isDeleting?: boolean;
   handler_delete?: () => Promise<void>;
 
-  refetchData: () => void;
+  refetchData: () => Promise<any>;
+  refetchCategories: () => Promise<any>;
 }
 
 export interface NoteProps {
   noteData: NoteI;
   categoriesAllData?: CategoryI[];
 
-  refetchData: () => void;
+  refetchData: () => Promise<any>;
+  refetchCategories: () => Promise<any>;
 }
 
 // Basic structure
