@@ -14,13 +14,20 @@ import {
 import { Note_Modal } from "./note-modal";
 import { delete_note, put_notes_archive } from "../../api";
 
-export const Note_Item: React.FC<NoteProps> = ({ noteData, refetchData }) => {
+export const Note_Item: React.FC<NoteProps> = ({
+  noteData,
+  categoriesAllData,
+  refetchData,
+}) => {
   const [preNoteData, setPreNoteData] = React.useState<NoteI>();
 
   // Utils
   const [showDetail, setShowDetail] = React.useState<boolean>(false);
   const [isArchiving, setIsArchiving] = React.useState<boolean>(false);
   const [isDeleting, setisDeleting] = React.useState<boolean>(false);
+
+  // Init categories options
+  // const [initCategories, setInitCategories] = React.useState<string[]>([]);
 
   const handler_archieve = async (): Promise<void> => {
     if (preNoteData && preNoteData.id) {
@@ -48,6 +55,19 @@ export const Note_Item: React.FC<NoteProps> = ({ noteData, refetchData }) => {
     // console.log("\n\n\n<- Note Item ->", noteData);
     setPreNoteData(noteData);
   }, [noteData]);
+
+  // Init the categories of the note
+  // React.useEffect(() => {
+  //   if (noteData && noteData.categories.length > 0) {
+  //     const stringCategories: string[] = [];
+
+  //     noteData.categories.forEach((categoryItem) =>
+  //       stringCategories.push(categoryItem.name)
+  //     );
+
+  //     setInitCategories(stringCategories);
+  //   }
+  // }, [noteData, noteData.categories]);
 
   return (
     <>
@@ -137,6 +157,8 @@ export const Note_Item: React.FC<NoteProps> = ({ noteData, refetchData }) => {
           typeAction="update"
           titleModal="Edit Note"
           noteData={noteData}
+          categoriesAllData={categoriesAllData}
+          // initCategories={initCategories}
           isArchiving={isArchiving}
           handler_archieve={handler_archieve}
           isDeleting={isDeleting}

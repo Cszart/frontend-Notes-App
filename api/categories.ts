@@ -13,7 +13,9 @@ export const get_categories_all = async (): Promise<any> => {
   const all_categories_response = await axios.get<CategoryI[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/categories/all`
   );
-  return all_categories_response;
+
+  const data = all_categories_response.data;
+  return data;
 };
 
 export const get_categories_byID = async (id: string): Promise<any> => {

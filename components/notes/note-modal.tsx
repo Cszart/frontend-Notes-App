@@ -1,10 +1,10 @@
 import * as React from "react";
 import clsx from "clsx";
-import { NoteDetailsProps } from "../../interfaces";
+import { CategoryI, NoteDetailsProps } from "../../interfaces";
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Button, Form, Input } from "antd";
-import { post_notes_create, put_notes_update } from "../../api";
+import { Button, Form, Input, Select } from "antd";
+// import { post_notes_create, put_notes_update } from "../../api";
 import {
   DeleteFilled,
   InboxOutlined,
@@ -12,13 +12,17 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 
+const { Option } = Select;
+
 export const Note_Modal: React.FC<NoteDetailsProps> = ({
   isOpen,
   hide,
-  typeAction,
 
-  noteData,
+  typeAction,
   titleModal,
+  noteData,
+
+  categoriesAllData,
 
   isArchiving,
   handler_archieve,
@@ -26,41 +30,76 @@ export const Note_Modal: React.FC<NoteDetailsProps> = ({
   isDeleting,
   handler_delete,
 
-  refetchData,
+  // refetchData,
 }) => {
   const [isLoading, setIsLoading] = React.useState<boolean>();
 
+  // All options available
+  const [categoriesOptions, setCategoriesOptions] = React.useState<
+    React.ReactNode[]
+  >([]);
+
+  // All options selected (formated)
+  // const [categoriesOptionsSelected, setCategoriesOptionsSelected] =
+  //   React.useState<number[]>([]);
+
   const [form] = Form.useForm();
 
-  // Function
+  // Functions
+  // submit form
   const onFinish = async (values: any): Promise<void> => {
     setIsLoading(true);
 
     const submitData: any = {
       title: values.title,
       text: values.text,
+      // categories: categoriesOptionsSelected,
     };
 
-    if (typeAction == "update" && noteData && noteData.id) {
-      //   const update_response =
-      await put_notes_update(noteData.id, submitData);
+    // if (typeAction == "update" && noteData && noteData.id) {
+    //   //   const update_response =
+    //   await put_notes_update(noteData.id, submitData);
 
-      //   console.log("<- Update note submit data ->", submitData);
-      //   console.log("<- Update response ->", update_response);
-    }
+    //   //   console.log("<- Update note submit data ->", submitData);
+    //   //   console.log("<- Update response ->", update_response);
+    // }
 
-    if (typeAction == "create") {
-      await post_notes_create(submitData);
-    }
+    // if (typeAction == "create") {
+    //   await post_notes_create(submitData);
+    // }
 
-    await refetchData();
+    // await refetchData();
+
+    console.log("<- submit data ->", submitData);
+
     setIsLoading(false);
     hide();
   };
 
-  // React.useEffect(() => {
-  //   console.log("<- Note Item Modal->", noteData);
-  // }, [noteData]);
+  // Select category option
+  const handleChangeSelect = (values: any) => {
+    console.log("<- Values categories, ", values);
+  };
+
+  // Use Effect
+  // Format categories to show
+  React.useEffect(() => {
+    if (categoriesAllData) {
+      const categoriesOptions: React.ReactNode[] = [];
+
+      categoriesAllData.forEach((categoryItem: CategoryI) => {
+        if (categoryItem.id) {
+          categoriesOptions.push(
+            <Option key={categoryItem.name} value={categoryItem.name}>
+              {categoryItem.name}
+            </Option>
+          );
+        }
+      });
+
+      setCategoriesOptions(categoriesOptions);
+    }
+  }, [categoriesAllData]);
 
   return (
     <Transition appear show={isOpen} as={React.Fragment}>
@@ -185,6 +224,17 @@ export const Note_Modal: React.FC<NoteDetailsProps> = ({
                     rows={4}
                     placeholder="Enter the note description"
                   />
+                </Form.Item>
+
+                <Form.Item label="Categories" name="categories">
+                  <Select
+                    mode="tags"
+                    style={{ width: "100%" }}
+                    onChange={handleChangeSelect}
+                    tokenSeparators={[","]}
+                  >
+                    {categoriesOptions}
+                  </Select>
                 </Form.Item>
 
                 {/* Button */}

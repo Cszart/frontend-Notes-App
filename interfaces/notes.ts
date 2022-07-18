@@ -8,6 +8,9 @@ export interface NoteDetailsProps {
   titleModal: string;
   noteData?: NoteI;
 
+  categoriesAllData?: CategoryI[];
+  initCategories?: string[];
+
   isArchiving?: boolean;
   handler_archieve?: () => Promise<void>;
 
@@ -19,6 +22,7 @@ export interface NoteDetailsProps {
 
 export interface NoteProps {
   noteData: NoteI;
+  categoriesAllData?: CategoryI[];
 
   refetchData: () => void;
 }

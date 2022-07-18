@@ -4,19 +4,26 @@ import { useQuery } from "react-query";
 import clsx from "clsx";
 
 // Interfaces
-import { NoteI } from "../interfaces";
+import { CategoryI, NoteI } from "../interfaces";
 
 // Api
-import { get_notes_all, get_notes_archived } from "../api";
+import {
+  get_categories_all,
+  get_notes_all,
+  get_notes_archived,
+  get_notes_category,
+} from "../api";
 
 // Antd
-import { Button, Spin } from "antd";
+import { Button, Spin, Select } from "antd";
 
 // Local components
 import { Note_Item, Note_Modal } from "../components";
-import { LoadingOutlined } from "@ant-design/icons";
+import { CloseOutlined, LoadingOutlined } from "@ant-design/icons";
 
 const loadingIcon = <LoadingOutlined style={{ fontSize: 100 }} spin />;
+
+const { Option } = Select;
 
 const Home: NextPage = () => {
   // // Utils
@@ -52,6 +59,9 @@ const Home: NextPage = () => {
     isLoading: notes_active_isLoading,
   } = useQuery(["notes_active_data"], () => get_notes_archived(false));
 
+  const { data: categories_all_data, refetch: categories_all_refetch } =
+    useQuery(["categories_all_data"], () => get_categories_all());
+
   // // Functions
   // All option selected
   const all_select = async () => {
@@ -76,6 +86,14 @@ const Home: NextPage = () => {
     notes_all_refetch();
     notes_active_refetch();
     notes_archived_refetch();
+    categories_all_refetch();
+  };
+
+  // On change select filter
+  const onChangeFilter = async (value: any) => {
+    const filteredNotes = await get_notes_category(value);
+
+    setCurrent_Notes_Data(filteredNotes);
   };
 
   // // Use Effects
@@ -155,6 +173,38 @@ const Home: NextPage = () => {
         </p>
       </div>
 
+      {/* Filter */}
+      {categories_all_data && (
+        <div className="flex justify-center items-center gap-4 w-full mt-10">
+          <Select
+            showSearch
+            placeholder="Filter by category"
+            optionFilterProp="children"
+            onChange={onChangeFilter}
+            filterOption={(input, option) =>
+              (option?.children as unknown as string)
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {categories_all_data.map((categoryItem: CategoryI) => {
+              return (
+                <Option key={categoryItem.id} value={categoryItem.id}>
+                  {categoryItem.name}
+                </Option>
+              );
+            })}
+          </Select>
+
+          <CloseOutlined
+            style={{ fontSize: "14px" }}
+            onClick={() => {
+              setCurrent_Notes_Data(notes_all_data);
+            }}
+          />
+        </div>
+      )}
+
       {/* If notes are being fetched */}
       {(notes_all_isLoading ||
         notes_active_isLoading ||
@@ -183,6 +233,7 @@ const Home: NextPage = () => {
                 <Note_Item
                   key={`note-item-${index}`}
                   noteData={notesItem}
+                  categoriesAllData={categories_all_data}
                   refetchData={refetchData}
                 />
               );
@@ -197,6 +248,7 @@ const Home: NextPage = () => {
           hide={() => setShowCreate(false)}
           typeAction="create"
           titleModal="Create Note"
+          categoriesAllData={categories_all_data}
           refetchData={refetchData}
         />
       )}
